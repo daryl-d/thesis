@@ -1,7 +1,0 @@
-INDEX VERSION 1.127
-/home/daryl/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/2152651453.index
-/Service/src
-/home/daryl/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/3806929397.index
-/Service/src
-/home/daryl/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/1849776277.index
-/Service/src
