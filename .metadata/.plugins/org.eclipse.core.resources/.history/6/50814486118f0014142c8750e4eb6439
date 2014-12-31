@@ -1,0 +1,11 @@
+package com.daryl.thesis;
+
+public class ConcreteTradingEngineService implements
+		TradingEngineServiceSkeletonInterface {
+
+	public void runTradingService(RunTradingServiceDocument runTradingService) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

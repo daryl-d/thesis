@@ -1,0 +1,63 @@
+package com.daryl.thesis;
+
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
+import org.apache.commons.io.output.NullOutputStream;
+
+import record.Record;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+
+import filter.CQLReader;
+import filter.FilterFactory;
+import filter.InstrumentSpecificFilter;
+import filter.MarkerRecordParser;
+import filter.TradeEngine;
+import filter.TradeFilterRemover;
+
+public class CassandraBackTradingEngine {
+	public void runEngine(String instrument, int date, int lowerTime,
+			int upperTime) {
+		Writer o = null;
+		try {
+			long start = System.currentTimeMillis();
+
+			o = new OutputStreamWriter(new NullOutputStream());
+
+			TradeFilterRemover t = new TradeFilterRemover(
+					new InstrumentSpecificFilter<TradeEngine>(
+							new TradeFilterRemover(
+									new InstrumentSpecificFilter<MarkerRecordParser>(
+											new CQLReader(instrument, date,
+													lowerTime, upperTime),
+											new MarkerRecordParser.Factory()),
+									Record.Type.TRADE),
+							new TradeEngine.Factory()), Record.Type.MARKER);
+			long runTime = (System.currentTimeMillis() - start);
+			t.close();
+			FilterFactory.write(FilterFactory.tradeEngine(t), o);
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client.resource(makeUrl(runTime));
+			service.get(ClientResponse.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+		}
+	}
+
+	public static void main(String args[]) {
+		CassandraBackTradingEngine cassandraBackedTradingEngine = new CassandraBackTradingEngine();
+		cassandraBackedTradingEngine.runEngine("WOW", 20120828, 35000, 35200);
+	}
+
+	private String makeUrl(long time) {
+		return "http://localhost:8080/time/add/" + time;
+	}
+
+}

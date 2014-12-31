@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.daryl.thesis</groupId>
+	<artifactId>TradingEngineService</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<pluginRepositories></pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+				<version>1.6.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsdl2code</goal>
+						</goals>
+						<configuration>
+							<packageName>com.itcuties.ws</packageName>
+							<wsdlFile>src/main/resources/wsdl/HighScoreService.wsdl</wsdlFile>
+							<databindingName>xmlbeans</databindingName>
+							<syncMode>sync</syncMode>
+							<unpackClasses>true</unpackClasses>
+							<generateServerSide>true</generateServerSide>
+							<generateServicesXml>true</generateServicesXml>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

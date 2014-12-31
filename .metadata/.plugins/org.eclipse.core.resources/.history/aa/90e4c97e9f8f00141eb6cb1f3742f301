@@ -1,0 +1,182 @@
+package reader;
+
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+
+import record.Amend;
+import record.CancelTrade;
+import record.Delete;
+import record.Enter;
+import record.OffMarketTrade;
+import record.Record;
+import record.Record.Type;
+import record.Trade;
+
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+
+public class CQLReader implements RecordReader {
+	private static final String LOCAL_HOST = "localhost";
+	private Cluster cluster;
+	private Session session;
+	public boolean first = true;
+	private ResultSet o;
+	private List<Row> results;
+	private Iterator<Row> iterator;
+
+	public CQLReader(String instrument, int date, int lowerTime, int upperTime) {
+		try	{
+		cluster = Cluster.builder().addContactPoint(LOCAL_HOST).build();
+		session = cluster.connect();		
+		
+		String query = "SELECT * FROM time_series_data.timeseries WHERE instrument = '#' and date = ? and time >= @ and time <= % limit 100000";
+		String statement = query.replace("#", instrument)
+				.replace("?", date + "").replace("@", lowerTime + "")
+				.replace("%", upperTime + "");
+		System.out.println(statement);
+		o = session.execute(statement);
+		results = o.all();
+		
+		iterator = results.iterator();
+		} catch(Exception e)	{
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Record get() {
+		if (iterator.hasNext()) {
+			return parse(iterator.next());
+		} else {
+			System.out.println("last");
+			return null;
+		}
+	}
+
+	@Override
+	public void close()  {
+		session.shutdown();
+		cluster.shutdown();
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Date fastDateParser(String date, int seconds, int millis) {
+		int year = Integer.parseInt(date.substring(0, 4));
+		int month = Integer.parseInt(date.substring(4, 6));
+		int day = Integer.parseInt(date.substring(6, 8));
+
+		Date d = new Date(year - 1900, month, day);
+		d.setTime(d.getTime() + seconds * 1000 + millis);
+		return d;
+	}
+
+	private static Record parse(Row o) {
+		final String instrument = o.getString("instrument");
+		final Date time = fastDateParser(o.getInt("date") + "",
+				o.getInt("time"), o.getInt("millis"));
+		final Record.Type type;
+		try {
+			type = Record.Type.valueOf(o.getString("recordtype"));
+
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+		EnumSet<Record.Qualifier> qualifiers = EnumSet
+				.noneOf(Record.Qualifier.class);
+
+		if (columnExists(o, "qualifiers")) {
+			final String tmp[] = o.getString("qualifiers").split(" ");
+			for (String element : tmp) {
+				qualifiers.add(Record.Qualifier.valueOf(element));
+			}
+		}
+
+		switch (type) {
+		case CONTROL:
+			return null;
+		case ENTER:
+		case AMEND:
+		case DELETE: {
+			final boolean bid = o.getString("bidask").equals("B");
+			float price = -1;
+			int volume = -1;
+			if (type != Record.Type.DELETE) {
+				price = (float) o.getDouble("price");
+				volume = (int) o.getLong("volume");
+				if (columnExists(o, "undisclosedvolume")) {
+					volume += o.getLong("undisclosedvolume");
+				}
+			}
+			long id;
+			int broker;
+			if (bid) {
+				id = o.getVarint("bidid").longValue();
+				if (columnExists(o, "buyerbrokerid")) {
+					broker = (int) o.getVarint("buyerbrokerid").longValue();
+				} else {
+					broker = 0;
+				}
+			} else {
+				id = o.getVarint("askid").longValue();
+				if (columnExists(o, "sellerbrokerid")) {
+					broker = (int) o.getVarint("sellerbrokerid").longValue();
+				} else {
+					broker = 0;
+				}
+			}
+			if (type == Record.Type.ENTER) {
+				return new Enter(instrument, time, qualifiers, bid, price,
+						volume, id, broker);
+			} else if (type == Record.Type.AMEND) {
+				return new Amend(instrument, time, qualifiers, bid, price,
+						volume, id, broker);
+			} else {
+				return new Delete(instrument, time, qualifiers, bid, id, broker);
+			}
+		}
+		case OFFTR:
+		case TRADE: {
+			final float price = (float) o.getDouble("price");
+			final int volume = (int) o.getLong("volume");
+			final long bidId = o.getVarint("bidid").longValue();
+			final int bidBroker;
+
+			if (columnExists(o, "buyerbrokerid")) {
+				bidBroker = (int) o.getVarint("buyerbrokerid").longValue();
+			} else {
+				bidBroker = 0;
+			}
+			final long askId = o.getVarint("askid").longValue();
+			final int askBroker;
+			if (columnExists(o, "sellerbrokerid")) {
+				askBroker = (int) o.getVarint("sellerbrokerid").longValue();
+			} else {
+				askBroker = 0;
+			}
+			if (type == Type.OFFTR) {
+				return new OffMarketTrade(instrument, time, qualifiers, price,
+						volume, bidId, bidBroker, askId, askBroker);
+			} else {
+				return new Trade(instrument, time, qualifiers, price, volume,
+						bidId, bidBroker, askId, askBroker);
+			}
+		}
+		case CANCEL_TRADE: {
+			final float price = (float) o.getDouble("price");
+			final int volume = (int) o.getLong("volume");
+			return new CancelTrade(instrument, time, qualifiers, price, volume);
+		}
+
+		default:
+			throw new Error("Not implemented");
+		}
+	}
+
+	private static boolean columnExists(Row o, String col) {		
+		return !o.isNull(col);
+	}
+}

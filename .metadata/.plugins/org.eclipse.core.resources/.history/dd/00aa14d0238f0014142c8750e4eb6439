@@ -1,0 +1,5 @@
+package com.daryl.thesis;
+
+public class CassandraBackTradingEngine {
+
+}

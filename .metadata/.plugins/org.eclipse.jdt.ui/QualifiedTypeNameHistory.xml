@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.apache.commons.io.output.NullOutputStream"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.CassandraBackedTradingEngine"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.RunTradingServiceDocument.RunTradingService"/>
+<fullyQualifiedTypeName name="me.prettyprint.hector.api.factory.HFactory"/>
+<fullyQualifiedTypeName name="me.prettyprint.hector.api.Cluster"/>
+<fullyQualifiedTypeName name="java.lang.StringBuilder"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="me.prettyprint.hector.api.query.QueryResult"/>
+<fullyQualifiedTypeName name="me.prettyprint.hector.api.beans.HColumn"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.constants.CassandraConstants"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.constants.SchemaConstants"/>
+<fullyQualifiedTypeName name="reader.CQLReader"/>
+<fullyQualifiedTypeName name="me.prettyprint.hector.api.beans.ColumnSlice"/>
+<fullyQualifiedTypeName name="java.lang.Deprecated"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.loader.LoadDataWideColumns"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.loader.LoadDataFixedColumns"/>
+<fullyQualifiedTypeName name="java.util.logging.Logger"/>
+<fullyQualifiedTypeName name="com.daryl.thesis.ServiceEndpointUrls"/>
+<fullyQualifiedTypeName name="java.util.logging.Level"/>
+</qualifiedTypeNameHistroy>

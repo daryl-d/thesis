@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://thesis.daryl.com"
+	xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	targetNamespace="http://thesis.daryl.com">
+	<wsdl:documentation>TradingEngineService</wsdl:documentation>
+	<wsdl:types>
+		<xs:schema attributeFormDefault="qualified"
+			elementFormDefault="qualified" targetNamespace="http://thesis.daryl.com">
+			<xs:element name="runTradingService">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="1" maxOccurs="1" name="instrument"
+							nillable="false" type="xs:string" />
+						<xs:element name="date" minOccurs="1" maxOccurs="1"
+							type="xs:int" nillable="false" />
+						<xs:element name="lowerTime" minOccurs="1" maxOccurs="1"
+							type="xs:int" nillable="false" />
+						<xs:element name="upperTime" minOccurs="1" maxOccurs="1"
+							type="xs:int" nillable="false" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="runTradingServiceRequest">
+		<wsdl:part name="parameters" element="ns:runTradingService" />
+	</wsdl:message>
+	<wsdl:portType name="TradingEngineServicePortType">
+		<wsdl:operation name="runTradingService">
+			<wsdl:input message="ns:runTradingServiceRequest"
+				wsaw:Action="urn:runTradingService" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="TradingEngineServiceSoap11Binding"
+		type="ns:TradingEngineServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<wsdl:operation name="runTradingService">
+			<soap:operation soapAction="urn:runTradingService"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="TradingEngineServiceSoap12Binding"
+		type="ns:TradingEngineServicePortType">
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<wsdl:operation name="runTradingService">
+			<soap12:operation soapAction="urn:runTradingService"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="TradingEngineServiceHttpBinding" type="ns:TradingEngineServicePortType">
+		<http:binding verb="POST" />
+		<wsdl:operation name="runTradingService">
+			<http:operation location="TradingEngineService/runTradingService" />
+			<wsdl:input>
+				<mime:content type="text/xml" part="runTradingService" />
+			</wsdl:input>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="TradingEngineService">
+		<wsdl:port name="TradingEngineServiceHttpSoap11Endpoint"
+			binding="ns:TradingEngineServiceSoap11Binding">
+			<soap:address
+				location="http://localhost:8080/axis2/services/TradingEngineService.TradingEngineServiceHttpSoap11Endpoint/" />
+		</wsdl:port>
+		<wsdl:port name="TradingEngineServiceHttpSoap12Endpoint"
+			binding="ns:TradingEngineServiceSoap12Binding">
+			<soap12:address
+				location="http://localhost:8080/axis2/services/TradingEngineService.TradingEngineServiceHttpSoap12Endpoint/" />
+		</wsdl:port>
+		<wsdl:port name="TradingEngineServiceHttpEndpoint" binding="ns:TradingEngineServiceHttpBinding">
+			<http:address
+				location="http://localhost:8080/axis2/services/TradingEngineService.TradingEngineServiceHttpEndpoint/" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

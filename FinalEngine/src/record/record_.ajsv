@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Apr-06 11:47" licenseGrade="evaluation" licenseeName="mic" licenseeOrganization="sasdf" style="defaultDiagramStyle" version="1.7.7.v20120311-1127">
+        <switch switchID="howToShowDependenciesOptions" switchValue="hidden"/>
+        <class className="record.CancelTrade" project="SENG3020" xLocation="403" yLocation="100"/>
+        <class className="record.Marker" project="SENG3020" xLocation="413" yLocation="2405"/>
+        <class className="record.Record" project="SENG3020" xLocation="246" yLocation="1054"/>
+        <class className="record.Amend" project="SENG3020" xLocation="695" yLocation="418"/>
+        <class className="record.Trade" project="SENG3020" xLocation="1030" yLocation="925"/>
+        <class className="record.OffMarketTrade" project="SENG3020" xLocation="1036" yLocation="673"/>
+        <class className="record.Delete" project="SENG3020" xLocation="100" yLocation="670"/>
+        <class className="record.Enter" project="SENG3020" xLocation="1013" yLocation="1441"/>
+        <class className="main.Entry" project="SENG3020" xLocation="1016" yLocation="2152"/>
+        <class className="main.Main" project="SENG3020" xLocation="1033" yLocation="1920"/>
+        <class className="main.Util" project="SENG3020" xLocation="1380" yLocation="1920"/>
+    </diagram>
+</ajsv>

@@ -1,0 +1,51 @@
+package com.daryl.thesis.loader;
+import me.prettyprint.cassandra.serializers.CompositeSerializer;
+import me.prettyprint.cassandra.serializers.IntegerSerializer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.CassandraHostConfigurator;
+import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.Composite;
+import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.query.SliceQuery;
+
+public class FetchDataWideColumns 
+{
+	public static void main(String args[]) 
+	{
+		String keySpaceName = "TIME_SERIES_DATA";
+		String columnFamilyName = "DATA";
+		CassandraHostConfigurator chc = new CassandraHostConfigurator(
+				"localhost");
+		Cluster cluster = HFactory.getOrCreateCluster("Test Cluster", chc);
+
+		Keyspace keyspace = HFactory.createKeyspace(keySpaceName, cluster);
+		
+		SliceQuery<String,Composite,String> sliceQuery = HFactory.createSliceQuery(keyspace, StringSerializer.get(), new CompositeSerializer(), StringSerializer.get());
+		sliceQuery.setColumnFamily(columnFamilyName);
+		sliceQuery.setKey("NAB");
+		
+		Composite startRange = new Composite();
+		startRange.addComponent(0, IntegerSerializer.get());
+		startRange.addComponent(0, IntegerSerializer.get());
+		
+		Composite endRange = new Composite();
+		endRange.addComponent(42300*1000, IntegerSerializer.get());
+		endRange.addComponent(400, IntegerSerializer.get());
+		
+		sliceQuery.setRange(startRange, endRange, false, 1200);
+		
+		QueryResult<ColumnSlice<Composite, String>> result = sliceQuery.execute();
+		ColumnSlice<Composite, String> cs = result.get();
+		
+		  for ( HColumn<Composite, String> col: cs.getColumns() ) {
+//		      System.out.println(col.getName().getComponents());
+//		      System.out.println(col.getName().get(0, StringSerializer.get()));
+		      System.out.println(col.getValue());
+		  }
+	}
+
+}
